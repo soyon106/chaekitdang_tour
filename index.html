@@ -11,9 +11,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
 
     <style>
-      /* Tailwind CSS가 적용되기 전 잠시 흰색 화면이 보일 수 있어 기본 배경색을 추가합니다. */
       body {
-        background-color: #f9fafb; /* bg-gray-50 */
+        background-color: #f9fafb;
       }
     </style>
   </head>
@@ -21,10 +20,8 @@
     <div id="root"></div>
 
     <script type="text/babel">
-      // React의 useState와 useEffect 기능을 가져옵니다.
       const { useState, useEffect } = React;
 
-      // 책방 코스 정보
       const courses = {
         "예술 코스": ["영화의 전당 라이브러리", "F1963도서관", "비온후"],
         "광안리 코스": ["더, 플레이스", "샵메이커즈", "인디고서원", "수이제"],
@@ -32,8 +29,6 @@
       };
 
       function App() {
-        // 스탬프 상태를 관리하는 useState. 초기값은 localStorage에서 불러오거나 없으면 빈 객체 {}
-        // JSON.parse는 문자열을 객체로 변환 (localStorage는 문자열만 저장 가능)
         const [stamps, setStamps] = useState(() => {
           try {
             const savedStamps = localStorage.getItem('chaekitdangStamps');
@@ -44,59 +39,59 @@
           }
         });
 
-        // stamps 상태가 변경될 때마다 localStorage에 저장
-        // JSON.stringify는 객체를 문자열로 변환
         useEffect(() => {
           try {
             localStorage.setItem('chaekitdangStamps', JSON.stringify(stamps));
           } catch (error) {
             console.error("localStorage에 스탬프를 저장하는 중 오류 발생:", error);
           }
-        }, [stamps]); // stamps가 바뀔 때만 실행
+        }, [stamps]);
 
-        // 스탬프 찍기 (수동 클릭 또는 QR 스캔 시)
         const handleStamp = (place) => {
           setStamps((prev) => ({ ...prev, [place]: true }));
         };
 
-        // 앱이 처음 로딩될 때 URL에서 'place' 파라미터를 확인하여 스탬프 찍기
         useEffect(() => {
           const params = new URLSearchParams(window.location.search);
           const scannedPlace = params.get('place');
+          const allPlaces = Object.values(courses).flat();
 
-          if (scannedPlace) {
-            // 모든 책방 목록을 하나로 합쳐서 유효한 책방인지 확인
-            const allPlaces = Object.values(courses).flat();
-            if (allPlaces.includes(scannedPlace)) {
-              handleStamp(scannedPlace);
-              // 스탬프를 찍은 후 URL에서 'place' 파라미터를 제거하여 새로고침 시 다시 찍히지 않도록 함
-              window.history.replaceState({}, document.title, window.location.pathname);
-            }
+          if (scannedPlace && allPlaces.includes(scannedPlace)) {
+            handleStamp(scannedPlace);
+            window.history.replaceState({}, document.title, window.location.pathname);
           }
-        }, []); // 앱이 처음 마운트될 때 한 번만 실행
+        }, []);
+
+        const allPlaces = Object.values(courses).flat();
+        const isAllStamped = allPlaces.every((place) => stamps[place]);
 
         return (
           <div className="min-h-screen bg-gray-50 flex flex-col items-center py-8 px-4 sm:px-6 lg:px-8 font-sans">
             <div className="max-w-4xl w-full bg-white shadow-xl rounded-xl p-6 sm:p-8 lg:p-10 border border-gray-200">
+
               <h1 className="text-4xl font-extrabold text-center text-gray-900 mb-8 tracking-tight leading-tight">
                 📚 책잇당 : 너랑 나랑, 책방 갈 타이밍
               </h1>
 
-              {/* 각 코스별로 렌더링 */}
+              {isAllStamped && (
+                <div className="mb-8 p-4 bg-green-100 border border-green-300 text-green-800 rounded-lg shadow text-center text-lg font-semibold">
+                  🎉 <strong>축하합니다!</strong> 책방 투어를 모두 완료했어요!
+                </div>
+              )}
+
               {Object.entries(courses).map(([courseName, places]) => (
                 <div key={courseName} className="mb-10 last:mb-0">
                   <h2 className="text-3xl font-bold text-gray-800 mb-6 border-b-2 border-indigo-300 pb-2">
                     {courseName}
                   </h2>
                   <ul className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* 각 장소별로 렌더링 */}
                     {places.map((place) => (
                       <li key={place} className="bg-white p-5 border border-gray-200 rounded-lg shadow-md flex flex-col sm:flex-row justify-between items-center transition-transform transform hover:scale-102 hover:shadow-lg duration-300 ease-in-out">
                         <span className="text-xl font-medium text-gray-700 mb-3 sm:mb-0 sm:mr-4 text-center sm:text-left w-full sm:w-auto">
                           {place}
                         </span>
                         <button
-                          onClick={() => handleStamp(place)} // 버튼 클릭 시 스탬프 찍기
+                          onClick={() => handleStamp(place)}
                           className={`
                             px-6 py-2 rounded-full text-lg font-semibold transition-all duration-300 ease-in-out
                             ${stamps[place]
@@ -119,7 +114,6 @@
         );
       }
 
-      // 'root' ID를 가진 HTML 요소에 App 컴포넌트를 렌더링합니다.
       ReactDOM.render(<App />, document.getElementById('root'));
     </script>
   </body>
