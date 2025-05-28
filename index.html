@@ -34,7 +34,7 @@
             const savedStamps = localStorage.getItem('chaekitdangStamps');
             return savedStamps ? JSON.parse(savedStamps) : {};
           } catch (error) {
-            console.error("localStorage에서 스탬프를 불러오는 중 오류 발생:", error);
+            console.error("스탬프 불러오기 오류:", error);
             return {};
           }
         });
@@ -43,7 +43,7 @@
           try {
             localStorage.setItem('chaekitdangStamps', JSON.stringify(stamps));
           } catch (error) {
-            console.error("localStorage에 스탬프를 저장하는 중 오류 발생:", error);
+            console.error("스탬프 저장 오류:", error);
           }
         }, [stamps]);
 
@@ -54,15 +54,22 @@
         useEffect(() => {
           const params = new URLSearchParams(window.location.search);
           const scannedPlace = params.get('place');
-          const allPlaces = Object.values(courses).flat();
-          if (scannedPlace && allPlaces.includes(scannedPlace)) {
-            handleStamp(scannedPlace);
-            window.history.replaceState({}, document.title, window.location.pathname);
+
+          if (scannedPlace) {
+            const allPlaces = Object.values(courses).flat();
+            if (allPlaces.includes(scannedPlace)) {
+              setStamps((prev) => {
+                const updated = { ...prev, [scannedPlace]: true };
+                localStorage.setItem('chaekitdangStamps', JSON.stringify(updated));
+                return updated;
+              });
+              window.history.replaceState({}, document.title, window.location.pathname);
+            }
           }
         }, []);
 
         const allPlaces = Object.values(courses).flat();
-        const isAllStamped = allPlaces.every(place => stamps[place]);
+        const isTourComplete = allPlaces.every((place) => stamps[place]);
 
         return (
           <div className="min-h-screen bg-gray-50 flex flex-col items-center py-8 px-4 sm:px-6 lg:px-8 font-sans">
@@ -71,9 +78,9 @@
                 📚 책잇당 : 너랑 나랑, 책방 갈 타이밍
               </h1>
 
-              {isAllStamped && (
-                <div className="bg-green-100 border border-green-300 text-green-800 px-6 py-4 rounded-lg mb-6 text-center text-xl font-semibold shadow">
-                  🎉 모든 장소를 방문하셨어요! 축하합니다!
+              {isTourComplete && (
+                <div className="mb-8 p-4 text-green-800 bg-green-100 border border-green-300 rounded text-center text-xl font-semibold">
+                  🎉 축하합니다! 모든 스탬프를 완료하셨습니다!
                 </div>
               )}
 
@@ -94,11 +101,11 @@
                             px-6 py-2 rounded-full text-lg font-semibold transition-all duration-300 ease-in-out
                             ${stamps[place]
                               ? 'bg-green-600 text-white shadow-lg shadow-green-300'
-                              : 'bg-gray-300 text-white opacity-60 cursor-not-allowed'}
-                            focus:outline-none w-full sm:w-auto
+                              : 'bg-gray-300 text-gray-600'}
+                            w-full sm:w-auto
                           `}
                         >
-                          {stamps[place] ? '✅ 스탬프 완료' : '⛔ QR로만 가능'}
+                          {stamps[place] ? '✅ 스탬프 완료' : '📍 QR로만 스탬프 가능'}
                         </button>
                       </li>
                     ))}
@@ -114,3 +121,4 @@
     </script>
   </body>
 </html>
+
