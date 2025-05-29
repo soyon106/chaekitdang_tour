@@ -14,6 +14,18 @@
       body {
         background-color: #f9fafb;
       }
+      .text-blue-600 {
+        color: #2563eb;
+      }
+      .border-blue-300 {
+        border-color: #93c5fd;
+      }
+      .text-blue-700 {
+        color: #1d4ed8;
+      }
+      .bg-blue-100 {
+        background-color: #dbeafe;
+      }
     </style>
   </head>
   <body class="bg-gray-50 text-gray-900 font-sans antialiased">
@@ -76,13 +88,18 @@
               {Object.entries(courses).map(([courseName, places]) => {
                 const color = courseColors[courseName];
                 const completed = isCourseCompleted(places);
+                const textColorClass = color === 'blue' ? 'text-blue-600' : `text-${color}-600`;
+                const borderColorClass = color === 'blue' ? 'border-blue-300' : `border-${color}-300`;
+                const completedTextColorClass = color === 'blue' ? 'text-blue-700' : `text-${color}-700`;
+                const completedBgColorClass = color === 'blue' ? 'bg-blue-100' : `bg-${color}-100`;
+
                 return (
                   <div key={courseName} className="mb-10 last:mb-0">
-                    <h2 className={`text-3xl font-bold text-${color}-600 mb-6 border-b-4 border-${color}-300 pb-2`}>
+                    <h2 className={`text-3xl font-bold ${textColorClass} mb-6 border-b-4 ${borderColorClass} pb-2`}>
                       {courseName}
                     </h2>
                     {completed && (
-                      <div className={`mb-4 text-${color}-700 bg-${color}-100 p-4 rounded-lg shadow-sm font-semibold`}>
+                      <div className={`mb-4 ${completedTextColorClass} ${completedBgColorClass} p-4 rounded-lg shadow-sm font-semibold`}>
                         🎉 {courseName}를 완료하셨습니다. 축하합니다!
                       </div>
                     )}
@@ -117,8 +134,5 @@
 
       ReactDOM.render(<App />, document.getElementById('root'));
     </script>
-  </body>
-</html>
-
   </body>
 </html>
