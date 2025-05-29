@@ -14,15 +14,6 @@
       body {
         background-color: #f9fafb;
       }
-
-      a.inherit-link {
-        color: inherit;
-        text-decoration: none;
-      }
-
-      a.inherit-link:hover {
-        text-decoration: underline;
-      }
     </style>
   </head>
   <body class="bg-gray-50 text-gray-900 font-sans antialiased">
@@ -38,9 +29,13 @@
       };
 
       const courseColors = {
-        "책방 코스": "sky",
+        "책방 코스": "blue",
         "문화예술 코스": "pink",
         "이색 코스": "yellow"
+      };
+
+      const placeLinks = {
+        "더, 플레이스": "https://naver.me/5HkaqyLb"
       };
 
       function App() {
@@ -97,25 +92,10 @@
                     )}
                     <ul className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {places.map((place) => {
-                        const placeLink = place === "더, 플레이스" 
-                          ? "https://naver.me/5HkaqyLb"
-                          : null;
-
-                        return (
-                          <li key={place} className="bg-white p-5 border border-gray-200 rounded-lg shadow-md flex flex-col sm:flex-row justify-between items-center transition-transform transform hover:scale-102 hover:shadow-lg duration-300 ease-in-out">
+                        const content = (
+                          <div className="flex flex-col sm:flex-row justify-between items-center p-5 border border-gray-200 rounded-lg shadow-md bg-white transition-transform transform hover:scale-102 hover:shadow-lg duration-300 ease-in-out">
                             <span className="text-xl font-medium text-gray-700 mb-3 sm:mb-0 sm:mr-4 text-center sm:text-left w-full sm:w-auto">
-                              {placeLink ? (
-                                <a
-                                  href={placeLink}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="inherit-link"
-                                >
-                                  {place}
-                                </a>
-                              ) : (
-                                place
-                              )}
+                              {place}
                             </span>
                             <button
                               disabled
@@ -129,6 +109,23 @@
                             >
                               {stamps[place] ? '✅ 스탬프 완료' : '📍 QR로 스탬프 찍기'}
                             </button>
+                          </div>
+                        );
+
+                        return (
+                          <li key={place}>
+                            {placeLinks[place] ? (
+                              <a
+                                href={placeLinks[place]}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="block"
+                              >
+                                {content}
+                              </a>
+                            ) : (
+                              content
+                            )}
                           </li>
                         );
                       })}
