@@ -23,18 +23,24 @@
       const { useState, useEffect } = React;
 
       const courses = {
-        "예술 코스": ["영화의 전당 라이브러리", "F1963도서관", "비온후"],
-        "광안리 코스": ["더, 플레이스", "샵메이커즈", "인디고서원", "수이제"],
-        "해운대 코스": ["그림책방 Dear", "김성종 추리문학관", "작은 닻"]
+        "문화예술 코스": ["영화의 전당 라이브러리", "F1963도서관", "비온후"],
+        "책방 코스": ["더, 플레이스", "샵메이커즈", "인디고서원", "수이제"],
+        "이색 코스": ["그림책방 Dear", "김성종 추리문학관", "작은 닻"]
+      };
+
+      const courseColors = {
+        "문화예술 코스": "pink-400",
+        "책방 코스": "sky-400",
+        "이색 코스": "yellow-400"
       };
 
       function App() {
         const [stamps, setStamps] = useState(() => {
           try {
-            const savedStamps = localStorage.getItem('chaekitdangStamps');
-            return savedStamps ? JSON.parse(savedStamps) : {};
-          } catch (error) {
-            console.error("스탬프 불러오기 오류:", error);
+            const saved = localStorage.getItem('chaekitdangStamps');
+            return saved ? JSON.parse(saved) : {};
+          } catch (e) {
+            console.error("불러오기 실패:", e);
             return {};
           }
         });
@@ -42,8 +48,8 @@
         useEffect(() => {
           try {
             localStorage.setItem('chaekitdangStamps', JSON.stringify(stamps));
-          } catch (error) {
-            console.error("스탬프 저장 오류:", error);
+          } catch (e) {
+            console.error("저장 실패:", e);
           }
         }, [stamps]);
 
@@ -54,22 +60,16 @@
         useEffect(() => {
           const params = new URLSearchParams(window.location.search);
           const scannedPlace = params.get('place');
-
           if (scannedPlace) {
             const allPlaces = Object.values(courses).flat();
             if (allPlaces.includes(scannedPlace)) {
-              setStamps((prev) => {
-                const updated = { ...prev, [scannedPlace]: true };
-                localStorage.setItem('chaekitdangStamps', JSON.stringify(updated));
-                return updated;
-              });
+              handleStamp(scannedPlace);
               window.history.replaceState({}, document.title, window.location.pathname);
             }
           }
         }, []);
 
-        const allPlaces = Object.values(courses).flat();
-        const isTourComplete = allPlaces.every((place) => stamps[place]);
+        const checkCourseCompleted = (places) => places.every((p) => stamps[p]);
 
         return (
           <div className="min-h-screen bg-gray-50 flex flex-col items-center py-8 px-4 sm:px-6 lg:px-8 font-sans">
@@ -78,40 +78,47 @@
                 📚 책잇당 : 너랑 나랑, 책방 갈 타이밍
               </h1>
 
-              {isTourComplete && (
-                <div className="mb-8 p-4 text-green-800 bg-green-100 border border-green-300 rounded text-center text-xl font-semibold">
-                  🎉 축하합니다! 모든 스탬프를 완료하셨습니다!
-                </div>
-              )}
+              {Object.entries(courses).map(([courseName, places]) => {
+                const color = courseColors[courseName] || "gray-400";
+                const isComplete = checkCourseCompleted(places);
 
-              {Object.entries(courses).map(([courseName, places]) => (
-                <div key={courseName} className="mb-10 last:mb-0">
-                  <h2 className="text-3xl font-bold text-gray-800 mb-6 border-b-2 border-indigo-300 pb-2">
-                    {courseName}
-                  </h2>
-                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {places.map((place) => (
-                      <li key={place} className="bg-white p-5 border border-gray-200 rounded-lg shadow-md flex flex-col sm:flex-row justify-between items-center transition-transform transform hover:scale-102 hover:shadow-lg duration-300 ease-in-out">
-                        <span className="text-xl font-medium text-gray-700 mb-3 sm:mb-0 sm:mr-4 text-center sm:text-left w-full sm:w-auto">
-                          {place}
-                        </span>
-                        <button
-                          disabled
-                          className={`
-                            px-6 py-2 rounded-full text-lg font-semibold transition-all duration-300 ease-in-out
-                            ${stamps[place]
-                              ? 'bg-green-600 text-white shadow-lg shadow-green-300'
-                              : 'bg-gray-300 text-gray-600'}
-                            w-full sm:w-auto
-                          `}
-                        >
-                          {stamps[place] ? '✅ 스탬프 완료' : '📍 QR로만 스탬프 가능'}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+                return (
+                  <div key={courseName} className="mb-10 last:mb-0">
+                    <h2 className={`text-3xl font-bold text-${color} mb-6 border-b-2 border-${color} pb-2`}>
+                      {courseName}
+                    </h2>
+
+                    {isComplete && (
+                      <div className={`bg-${color} text-white font-semibold text-center py-3 rounded mb-4`}>
+                        🎉 {courseName}를 완료하셨습니다. 축하합니다!
+                      </div>
+                    )}
+
+                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {places.map((place) => (
+                        <li key={place} className="bg-white p-5 border border-gray-200 rounded-lg shadow-md flex flex-col sm:flex-row justify-between items-center transition-transform transform hover:scale-102 hover:shadow-lg duration-300 ease-in-out">
+                          <span className="text-xl font-medium text-gray-700 mb-3 sm:mb-0 sm:mr-4 text-center sm:text-left w-full sm:w-auto">
+                            {place}
+                          </span>
+                          <button
+                            disabled
+                            className={`
+                              px-6 py-2 rounded-full text-lg font-semibold
+                              ${stamps[place]
+                                ? `bg-green-600 text-white shadow-lg shadow-green-300`
+                                : `bg-${color} text-white shadow-md shadow-${color}`
+                              }
+                              w-full sm:w-auto
+                            `}
+                          >
+                            {stamps[place] ? '✅ 스탬프 완료' : '📍 QR로만 스탬프 가능'}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                );
+              })}
             </div>
           </div>
         );
@@ -121,4 +128,3 @@
     </script>
   </body>
 </html>
-
