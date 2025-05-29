@@ -23,15 +23,15 @@
       const { useState, useEffect } = React;
 
       const courses = {
-        "문화예술 코스": ["영화의 전당 라이브러리", "F1963도서관", "비온후"],
         "책방 코스": ["더, 플레이스", "샵메이커즈", "인디고서원", "수이제"],
+        "문화예술 코스": ["영화의 전당 라이브러리", "F1963도서관", "비온후"],
         "이색 코스": ["그림책방 Dear", "김성종 추리문학관", "작은 닻"]
       };
 
       const courseColors = {
-        "문화예술 코스": "pink-400",
-        "책방 코스": "sky-400",
-        "이색 코스": "yellow-400"
+        "책방 코스": "sky",
+        "문화예술 코스": "pink",
+        "이색 코스": "yellow"
       };
 
       function App() {
@@ -39,8 +39,7 @@
           try {
             const saved = localStorage.getItem('chaekitdangStamps');
             return saved ? JSON.parse(saved) : {};
-          } catch (e) {
-            console.error("불러오기 실패:", e);
+          } catch {
             return {};
           }
         });
@@ -48,9 +47,7 @@
         useEffect(() => {
           try {
             localStorage.setItem('chaekitdangStamps', JSON.stringify(stamps));
-          } catch (e) {
-            console.error("저장 실패:", e);
-          }
+          } catch {}
         }, [stamps]);
 
         const handleStamp = (place) => {
@@ -60,16 +57,14 @@
         useEffect(() => {
           const params = new URLSearchParams(window.location.search);
           const scannedPlace = params.get('place');
-          if (scannedPlace) {
-            const allPlaces = Object.values(courses).flat();
-            if (allPlaces.includes(scannedPlace)) {
-              handleStamp(scannedPlace);
-              window.history.replaceState({}, document.title, window.location.pathname);
-            }
+          const allPlaces = Object.values(courses).flat();
+          if (scannedPlace && allPlaces.includes(scannedPlace)) {
+            handleStamp(scannedPlace);
+            window.history.replaceState({}, document.title, window.location.pathname);
           }
         }, []);
 
-        const checkCourseCompleted = (places) => places.every((p) => stamps[p]);
+        const isCourseCompleted = (places) => places.every((p) => stamps[p]);
 
         return (
           <div className="min-h-screen bg-gray-50 flex flex-col items-center py-8 px-4 sm:px-6 lg:px-8 font-sans">
@@ -79,21 +74,18 @@
               </h1>
 
               {Object.entries(courses).map(([courseName, places]) => {
-                const color = courseColors[courseName] || "gray-400";
-                const isComplete = checkCourseCompleted(places);
-
+                const color = courseColors[courseName];
+                const completed = isCourseCompleted(places);
                 return (
                   <div key={courseName} className="mb-10 last:mb-0">
-                    <h2 className={`text-3xl font-bold text-${color} mb-6 border-b-2 border-${color} pb-2`}>
+                    <h2 className={`text-3xl font-bold text-${color}-600 mb-6 border-b-4 border-${color}-300 pb-2`}>
                       {courseName}
                     </h2>
-
-                    {isComplete && (
-                      <div className={`bg-${color} text-white font-semibold text-center py-3 rounded mb-4`}>
+                    {completed && (
+                      <div className={`mb-4 text-${color}-700 bg-${color}-100 p-4 rounded-lg shadow-sm font-semibold`}>
                         🎉 {courseName}를 완료하셨습니다. 축하합니다!
                       </div>
                     )}
-
                     <ul className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {places.map((place) => (
                         <li key={place} className="bg-white p-5 border border-gray-200 rounded-lg shadow-md flex flex-col sm:flex-row justify-between items-center transition-transform transform hover:scale-102 hover:shadow-lg duration-300 ease-in-out">
@@ -103,15 +95,14 @@
                           <button
                             disabled
                             className={`
-                              px-6 py-2 rounded-full text-lg font-semibold
+                              px-6 py-2 rounded-full text-lg font-semibold transition-all duration-300 ease-in-out
                               ${stamps[place]
-                                ? `bg-green-600 text-white shadow-lg shadow-green-300`
-                                : `bg-${color} text-white shadow-md shadow-${color}`
-                              }
+                                ? 'bg-green-600 text-white shadow-lg shadow-green-300'
+                                : 'bg-gray-300 text-gray-600 cursor-not-allowed'}
                               w-full sm:w-auto
                             `}
                           >
-                            {stamps[place] ? '✅ 스탬프 완료' : '📍 QR로만 스탬프 가능'}
+                            {stamps[place] ? '✅ 스탬프 완료' : '📍 QR로 스탬프 찍기'}
                           </button>
                         </li>
                       ))}
