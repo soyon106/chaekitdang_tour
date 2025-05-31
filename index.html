@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>책잇당 투어</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React -->
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <!-- Babel -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  </head>
+  <body class="bg-gray-50 text-gray-900 font-sans antialiased">
+    <div id="root" class="p-4"></div>
+
+    <script type="text/babel">
+      const places = [
+        { name: "더, 플레이스", url: "https://naver.me/5HkaqyLb" },
+        { name: "인디고서원", url: "https://naver.me/5nelffEd" },
+        { name: "수이제", url: "https://naver.me/5HrI8iTO" },
+        { name: "영화의 전당 라이브러리", url: "https://naver.me/F1r3IcEe" },
+        { name: "F1963도서관", url: "https://naver.me/xDJD3N86" },
+        { name: "비온후", url: "https://naver.me/GlJofNs0" },
+        { name: "그림책방 Dear", url: "https://naver.me/xIemC8sP" },
+        { name: "김성종 추리문학관", url: "https://naver.me/FCAf9MpQ" },
+        { name: "작은 닻", url: "https://naver.me/GALtbhPb" },
+        { name: "샵메이커즈", url: "https://naver.me/5HkaCoo2" }
+      ];
+
+      function App() {
+        return (
+          <div className="max-w-xl mx-auto">
+            <h1 className="text-3xl font-bold mb-6 text-center">📚 책잇당 투어</h1>
+            <ul className="space-y-3">
+              {places.map((place, index) => (
+                <li key={index}>
+                  <a
+                    href={place.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block p-4 bg-white rounded-xl shadow hover:bg-gray-100 transition"
+                  >
+                    {place.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
+      }
+
+      ReactDOM.render(<App />, document.getElementById("root"));
+    </script>
+  </body>
+</html>
