@@ -35,19 +35,17 @@
       };
 
       const placeLinks = {
-        "더, 플레이스": "https://naver.me/5HkaqyLb"
-        "인디고서원": "https://naver.me/5nelffEd"
-        "수이제": "https://naver.me/5HrI8iTO"
-        "영화의 전당 라이브러리": "https://naver.me/F1r3IcEe"
-        "F1963도서관": "https://naver.me/xDJD3N86"
-        "비온후": "https://naver.me/GlJofNs0"
-        "그림책방 Dear": "https://naver.me/xIemC8sP"
-        "김성종 추리문학관": "https://naver.me/FCAf9MpQ"
+        "더, 플레이스": "https://naver.me/5HkaqyLb",
+        "샵메이커즈": "https://naver.me/5HkaCoo2",
+        "인디고서원": "https://naver.me/5nelffEd",
+        "수이제": "https://naver.me/5HrI8iTO",
+        "영화의 전당 라이브러리": "https://naver.me/F1r3IcEe",
+        "F1963도서관": "https://naver.me/xDJD3N86",
+        "비온후": "https://naver.me/GlJofNs0",
+        "그림책방 Dear": "https://naver.me/xIemC8sP",
+        "김성종 추리문학관": "https://naver.me/FCAf9MpQ",
         "작은 닻": "https://naver.me/GALtbhPb"
       };
-        const placeLinks = {
-          "샵메이커즈": "https://naver.me/5HkaCoo2"
-        };
 
       function App() {
         const [stamps, setStamps] = useState(() => {
@@ -110,13 +108,11 @@
                             </span>
                             <button
                               disabled
-                              className={`
-                                px-6 py-2 rounded-full text-lg font-semibold transition-all duration-300 ease-in-out
-                                ${stamps[place]
-                                  ? 'bg-green-600 text-white shadow-lg shadow-green-300'
-                                  : 'bg-gray-300 text-gray-600 cursor-not-allowed'}
-                                w-full sm:w-auto
-                              `}
+                              className={
+                                stamps[place]
+                                  ? 'px-6 py-2 rounded-full text-lg font-semibold bg-green-600 text-white shadow-lg shadow-green-300 w-full sm:w-auto'
+                                  : 'px-6 py-2 rounded-full text-lg font-semibold bg-gray-300 text-gray-600 cursor-not-allowed w-full sm:w-auto'
+                              }
                             >
                               {stamps[place] ? '✅ 스탬프 완료' : '📍 QR로 스탬프 찍기'}
                             </button>
